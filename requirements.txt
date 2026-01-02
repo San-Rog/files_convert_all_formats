@@ -1,0 +1,11 @@
+streamlit==1.52.2
+pandas==2.3.3
+openpyxl==3.1.5
+python-docx==1.0.0
+openpyxl==3.1.5
+xlrd==2.0.2
+PyYAML==6.0.3
+toml==0.10.2
+fpdf
+odfpy
+

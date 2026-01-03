@@ -80,47 +80,47 @@ class downOrDfFiles():
             self.pos = None
         if self.opt in [-1, -2, -3]:
             self.csvAllDf()
-        match self.pos:
-            case 0: 
-                if self.index in [0, 1, 2]:
-                    if self.index in [0, 1]:
-                        self.csvXlsx() 
-                    elif self.index == 2:
-                        self.csvTsv()
-                elif self.index == 3:
-                    self.csvDocx()     
-                elif self.index == 4:
-                    self.csvYaml()
-                elif self.index == 5:
-                    self.csvJson()
-                elif self.index == 6:
-                    self.csvXhtml()
-                elif self.index == 7:
-                    self.csvToml()
-                elif self.index == 8:
-                    self.csvTxt()
-                elif self.index == 9:
-                    self.csvPdf()
-                if self.opt is not None:
-                    self.nameZip = f'arquivo_all_{self.ext}.zip'
-                    self.downZip()
-                    if os.path.getsize(self.nameZip) > 0:
-                        messages(self.nameZip, self.ext, self.nFiles)
-            case 1 | 2:
-                if self.index == 0:
-                    self.xlsCsv()
-                else:
-                    pass
-                if self.opt is not None:
-                    self.nameZip = f'arquivo_all_{self.ext}.zip'
-                    self.downZip()
-                    if os.path.getsize(self.nameZip) > 0:
-                        messages(self.nameZip, self.ext, self.nFiles) 
-                if self.opt in [-1, -2, -3]:
-                    self.csvAllDf()
-            case __: 
-                pass
-    
+        else:
+            buttSel = True
+            match self.pos:
+                case 0: 
+                    if self.index in [0, 1, 2]:
+                        if self.index in [0, 1]:
+                            self.csvXlsx() 
+                        elif self.index == 2:
+                            self.csvTsv()
+                    elif self.index == 3:
+                        self.csvDocx()     
+                    elif self.index == 4:
+                        self.csvYaml()
+                    elif self.index == 5:
+                        self.csvJson()
+                    elif self.index == 6:
+                        self.csvXhtml()
+                    elif self.index == 7:
+                        self.csvToml()
+                    elif self.index == 8:
+                        self.csvTxt()
+                    elif self.index == 9:
+                        self.csvPdf()
+                    else: 
+                         buttSel = False
+                case 1 | 2:
+                    if self.index == 0:
+                        self.xlsXslxOdsCsv()
+                    else:
+                        buttSel = False
+                case 3:
+                    if self.index == 1:
+                        self.xlsXslxOdsCsv()
+                    else:
+                        buttSel = False
+            if all([self.opt is not None, buttSel]):
+                self.nameZip = f'arquivo_all_{self.ext}.zip'
+                self.downZip()
+                if os.path.getsize(self.nameZip) > 0:
+                    messages(self.nameZip, self.ext, self.nFiles) 
+        
     def csvCsv(self, mode):
         allLines = []
         for data in self.dataFile:
@@ -135,7 +135,7 @@ class downOrDfFiles():
         if mode == 1:
             return self.fileOut
             
-    def xlsCsv(self):
+    def xlsXslxOdsCsv(self):
         for f, file in enumerate(self.files):
             self.nameFile = file[0]
             self.dataFile = file[1] 
@@ -151,10 +151,7 @@ class downOrDfFiles():
                     cnt += 1
                     self.bytesFiles(2)
             except:
-                try:
-                    self.dfAll = pd.read_excel(self.dataFile, sheet_name=None, engine='openpyxl')
-                except:
-                    self.dfAll = pd.read_excel(self.dataFile, sheet_name=None, engine='xlrd')
+                self.dfAll = pd.read_excel(self.dataFile, sheet_name=None, engine=self.engine)
                 cnt = 1
                 for nome, df in self.dfAll.items():
                     self.fileOut = f'{self.nameFile}_{f+1}_aba_{cnt}.{self.ext}'
@@ -221,7 +218,7 @@ class downOrDfFiles():
         self.place = st.empty()
         self.place.write('')
     
-    def xlsDf(self, pos, exprFile):
+    def xlsXslxOdsDf(self, pos, exprFile, keyEngine):
         self.exprFile = exprFile
         file = self.files[0]
         fileSel = fileSelDf[0]
@@ -229,10 +226,7 @@ class downOrDfFiles():
         self.dataFile = file[1]
         allDfs.clear()
         allDfs.setdefault(pos, [])
-        try:
-            self.dfAll = pd.read_excel(self.dataFile, sheet_name=None, engine='openpyxl')
-        except: 
-            self.dfAll = pd.read_excel(self.dataFile, sheet_name=None, engine='xlrd')
+        self.dfAll = pd.read_excel(self.dataFile, sheet_name=None, engine=keyEngine)
         allDfs[pos].append(self.dfAll)
         nAbas = len(self.dfAll.items())
         #✒️
@@ -245,17 +239,24 @@ class downOrDfFiles():
         place.write('')
         place.markdown(exprAbas)
         for nome, df in self.dfAll.items():
-            try:
-                self.df = pd.read_excel(self.dataFile, sheet_name=nome, engine='openpyxl').fillna('')
-            except:
-                self.df = pd.read_excel(self.dataFile, sheet_name=nome, engine='xlrd').fillna('')
+            self.df = pd.read_excel(self.dataFile, sheet_name=nome, engine=keyEngine).fillna('')
             self.df = self.df.astype(str)
             allDfs[pos].append(self.df)
             self.expr = ''
             self.returnRowCol()
             st.markdown(f'#️⃣  {cnt} de {nAbas} <-> :red[**{nome}**] (*{self.exprLine} e {self.exprCol}*)')
-            st.dataframe(self.df)
+            st.write(self.df)
             cnt += 1
+    
+    def odsDf(self, pos, exprFile, keyEngine):
+        file = self.files[0]
+        fileSel = fileSelDf[0]
+        self.nameFile = file[0]
+        self.dataFile = file[1]
+        df = pd.read_excel(self.dataFile, sheet_name=None, engine=keyEngine)   
+        for nome, df in df.items():
+            self.df = pd.read_excel(self.dataFile, sheet_name=nome, engine=keyEngine).fillna('')
+            st.write(self.df)
     
     def csvDocx(self):
         for f, file in enumerate(self.files):
@@ -566,6 +567,7 @@ class main():
     def __init__(self):          
         st.set_page_config(initial_sidebar_state="collapsed", layout="wide")
         self.typeExt = ['CSV', 'XLS', 'XLSX', 'ODS']
+        self.engine = ['', 'openpyxl', 'xlrd', 'openpyxl', 'odf']
         nIni = len(self.typeExt)
         self.typeExt.insert(0, '')
         colType, colUpload = st.columns([12, 17], width='stretch')
@@ -583,6 +585,7 @@ class main():
                     upDisabled = True
                     self.typeStr = ''
                 else:
+                    self.loc = self.typeExt.index(self.typeFile)
                     upDisabled = False
                     self.typeStr = f':red[**{self.typeFile}**]'
                     st.space(size="small")                
@@ -605,22 +608,23 @@ class main():
                 with st.container(border=4, key='contUpload', gap='small', height='content', 
                                   vertical_alignment='center'):
                     self.nUpLoads = len(self.upLoad)
-                    if self.typeFile == self.typeExt[1]:
-                        self.exts = {'openpyxl': ['xls', 'xlsx', 'html'], 'odf': ['ods'], 'tsv': ['tsv'], 
-                                     'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
-                                     'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']}  
-                    elif self.typeFile == self.typeExt[2]: 
-                        self.exts = {'openpyxl': ['csv'.lower(), 'xlsx', 'html'], 'odf': ['ods'], 'tsv': ['tsv'], 
-                                     'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
-                                     'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']}  
-                    elif self.typeFile == self.typeExt[3]: 
-                        self.exts = {'openpyxl': ['csv'.lower(), 'xls', 'html'], 'odf': ['ods'], 'tsv': ['tsv'], 
-                                     'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
-                                     'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']} 
-                    elif self.typeFile == self.typeExt[4]:
-                        self.exts = {'openpyxl': ['xls', 'xlsx', 'html'], 'odf': ['csv'], 'tsv': ['tsv'], 
-                                     'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
-                                     'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']} 
+                    match self.loc:
+                        case 1:
+                            self.exts = {self.engine[1]: ['xls', 'xlsx', 'html'], 'odf': ['ods'], 'tsv': ['tsv'], 
+                                         'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
+                                         'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']}  
+                        case 2: 
+                            self.exts = {self.engine[2]: ['csv'.lower(), 'xlsx', 'html'], 'odf': ['ods'], 'tsv': ['tsv'], 
+                                         'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
+                                         'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']}  
+                        case 3: 
+                            self.exts = {self.engine[3]: ['csv'.lower(), 'xls', 'html'], 'odf': ['ods'], 'tsv': ['tsv'], 
+                                         'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
+                                         'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']} 
+                        case 4: 
+                            self.exts = {self.engine[3]: ['xls', 'xlsx', 'html'], 'odf': ['csv'], 'tsv': ['tsv'], 
+                                         'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
+                                         'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']} 
                     self.newTypes = []
                     self.segregateTypes()
                     self.disableds = ['disabled' + str(w) for w in range(len(self.newTypes))]
@@ -693,7 +697,7 @@ class main():
                                 st.text(f'✒️ Com redundância ({nRep})', width=720)
                                 downOrDfFiles([filesAll, self.files[1:], filesRep], None, None, None, -3, None, None)  
                         if any(self.allButtons):
-                            if self.typeFile in [self.typeExt[1], self.typeExt[2], self.typeExt[3]]: 
+                            if self.loc in [1, 2, 3, 4]: 
                                 ind = self.allButtons.index(True) 
                                 self.expr = f'{self.strFunc[1]} {self.nUpLoads} do formato {self.stripe} para o formato {self.newTypes[ind]}...'
                                 self.index, self.opt = indOpt[ind]
@@ -742,12 +746,13 @@ class main():
         self.segregateDf()
         with st.spinner('Aguarde a exibição do arquivo na tela...'):
             objDown = downOrDfFiles(self.filesReadDf, None, None, self.ext, None, None, None)
-            if self.typeFile == self.typeExt[1]:
+            if self.loc == 1:
                 exprFile = f'✒️ Aba do arquivo :red[**{nameFile}**]'
                 objDown.csvDf(exprFile)   
-            elif self.typeFile in [self.typeExt[2], self.typeExt[3]]:
+            elif self.loc in [2, 3, 4]:
                 exprFile = f' do arquivo :red[**{nameFile}**]'
-                objDown.xlsDf(self.pos, exprFile)
+                engine = self.engine[self.loc]
+                objDown.xlsXslxOdsDf(self.pos, exprFile, engine)
                     
     def singPlural(self, *args):
         if args[0] <= 1: 
@@ -787,7 +792,7 @@ class main():
               
     def segregateFiles(self):
         filesFind = {}
-        if self.typeFile == self.typeExt[1]:
+        if self.loc == 1:
             for upLoad in self.upLoad: 
                 nameGlobal = upLoad.name
                 nameFile, ext = os.path.splitext(nameGlobal)
@@ -803,7 +808,7 @@ class main():
                 readerCsv = csv.reader(self.fileMemory, delimiter=sep)
                 joinNameRead = (nameFile, readerCsv)
                 self.filesRead.append(joinNameRead)
-        elif self.typeFile in [self.typeExt[2], self.typeExt[3]]: 
+        elif self.loc in [2, 3, 4]: 
             for upLoad in self.upLoad: 
                 nameGlobal = upLoad.name
                 nameFile, ext = os.path.splitext(nameGlobal)
@@ -817,7 +822,7 @@ class main():
                 self.filesRead.append(joinNameRead)
             
     def segregateDf(self):        
-        if self.typeFile == self.typeExt[1]:
+        if self.loc == 1:
             for u, upLoad in enumerate(self.upLoad):
                 if u == self.pos:
                     nameGlobal = upLoad.name
@@ -830,7 +835,7 @@ class main():
                     joinNameRead = (nameFile, readerCsv)
                     self.filesReadDf.append(joinNameRead)
                     break         
-        elif self.typeFile in [self.typeExt[2], self.typeExt[3]]: 
+        elif self.loc in [2, 3]: 
             for u, upLoad in enumerate(self.upLoad):
                 if u == self.pos:
                     nameGlobal = upLoad.name
@@ -839,6 +844,14 @@ class main():
                     joinNameRead = (nameFile, bytesExcel)
                     self.filesReadDf.append(joinNameRead)
                     break
+        elif self.loc == 4:
+            for u, upLoad in enumerate(self.upLoad):
+                if u == self.pos:
+                    nameGlobal = upLoad.name
+                    nameFile, ext = os.path.splitext(nameGlobal)
+                    joinNameRead = (nameFile, upLoad)
+                    self.filesReadDf.append(joinNameRead)
+                    break                    
     
     def detectSep(self):
         lines = 1024*10
@@ -857,4 +870,3 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
-

@@ -9,8 +9,10 @@ toml==0.10.2
 pyexcel==0.7.4
 pyexcel_xlsx
 pyexcel_ods3
+regex
 fpdf
 odfpy
+
 
 
 

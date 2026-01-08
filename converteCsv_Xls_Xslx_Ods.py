@@ -548,12 +548,8 @@ class downOrDfFiles():
             valObj = ects[1]
             if valObj <= 1:
                obj = f'{valObj} {ects[2]}'
-            elif all([valObj >= 2, valObj <= 999]):
-               obj = f'{valObj} {ects[3]}'
             else:
-                objAcess = acessories(None)
-                valForm = objAcess.valueMoney(valObj)
-                obj = f'{valForm} {ects[3]}'
+               obj = f'{valObj} {ects[3]}'
             objs.append(obj)
         self.expr = ', '.join(objs[:-1])
         self.expr += f' e {objs[-1]}'
@@ -1216,3 +1212,4 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+

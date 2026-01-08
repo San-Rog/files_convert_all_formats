@@ -39,9 +39,17 @@ ul[data-testid="stSelectboxVirtualDropdown"] li[aria-selected="true"] {
 	background-color: yellow;
 	color: red;
 	transform: translateY(4px); 
+	cursor: wait;
 }
 
-.element-container:nth-of-type(1) button:not(:hover) {
+.element-container:nth-of-type(1) button:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+	cursor: not-allowed;
+	pointer-events: none;	
+}
+
+.element-container:nth-of-type(1) button:not(:hover){
 	background-color: #F0FFF0;
 	color: black;	
 }
@@ -63,27 +71,6 @@ ul[data-testid="stSelectboxVirtualDropdown"] li[aria-selected="true"] {
 	text-align: center; 
 }
 
-table{
-	width: 100%;
-	text-align: center;
-	vertical-align: middle;
-}
-
-th {
-	background: lightgreen;
-	color: white;
-	font-style: normal;
-	font-size: 14px;
-	text-align: center;
-}
-
-td, tr {
-	font-size: 14px;	
-}
-
-tr:hover {
-	background-color: Violet;
-}
 
 
 

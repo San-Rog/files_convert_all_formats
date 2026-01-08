@@ -75,14 +75,7 @@ class messages():
     
 class acessories():
     def __init__(self, *args):
-        try:
-            locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
-        except locale.Error:
-            locale.setlocale(locale.LC_ALL, 'Portuguese_Brazil.1252')
-        
-    def valueMoney(self, value):
-        valFormat = locale.currency(value, symbol=False, grouping=True)[:-3]
-        return valFormat
+        pass
         
 class downOrDfFiles():
     def __init__(self, *args):
@@ -547,8 +540,11 @@ class downOrDfFiles():
             valObj = ects[1]
             if valObj <= 1:
                obj = f'{valObj} {ects[2]}'
+            elif all([valObj >= 2, valObj <= 999]):
+                obj = f'{valObj} {ects[3]}'
             else:
-               obj = f'{valObj} {ects[3]}'
+                valForm = f'{valObj:,.0f}'.replace(',', '.')
+                obj = f'{valForm} {ects[3]}'
             objs.append(obj)
         self.expr = ', '.join(objs[:-1])
         self.expr += f' e {objs[-1]}'
@@ -1211,5 +1207,6 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+
 
 

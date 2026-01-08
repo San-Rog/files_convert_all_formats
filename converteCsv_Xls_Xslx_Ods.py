@@ -27,7 +27,6 @@ from pyexcel_ods3 import save_data
 from collections import OrderedDict
 import pyexcel
 from collections import Counter
-import locale
 
 class messages():
     def __init__(self, *args):
@@ -1212,4 +1211,5 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+
 

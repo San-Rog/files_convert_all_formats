@@ -244,12 +244,12 @@ class downOrDfFiles():
                 except: 
                     df.to_excel(self.fileOut, index=False, engine=self.engine, na_rep='')
                 self.bytesFiles()
-            self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}_aba_por_aba.{self.ext}'
+            self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}.{self.ext}'
             with pd.ExcelWriter(self.fileOut, engine='openpyxl') as writer:
                 for name, df in self.dfAll.items():
                     df.to_excel(writer, sheet_name=name, index=False) 
             self.bytesFiles()
-            self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}_abas_sobrepostas.{self.ext}'
+            self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}.{self.ext}'
             self.filesUniqueFile(1)    
     
     def xlsXlsxOdsPdf(self):
@@ -262,12 +262,12 @@ class downOrDfFiles():
             except: 
                 self.dfAll = pd.read_excel(self.dataFile, sheet_name=None)
             for name, df in self.dfAll.items():
-                self.fileOut = f'{self.nameFile}_{f+1}_{name}.{self.ext}'
+                self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}_{name}.{self.ext}'
                 self.df = df.fillna('')
                 self.df = self.df.astype(str)
                 self.prepairePdf()
                 self.bytesFiles()
-            self.fileOut = f'{self.nameFile}_{f+1}.{self.ext}'
+            self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}.{self.ext}'
             self.filesUniqueFile(6)
     
     def csvOds(self):
@@ -1343,4 +1343,3 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
-

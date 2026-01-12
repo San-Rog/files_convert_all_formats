@@ -40,7 +40,7 @@ class messages():
             self.fileFinal = f'zipado_isolado_{self.suffix}.zip'
         else:
             self.fileFinal = f'zipado_múltiplos_{self.suffix}.zip'
-        if None not in args:
+        if all([None not in args, self.nFiles != 0]):
             self.mensResult()
     
     def mensResult(self):
@@ -1345,3 +1345,4 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+

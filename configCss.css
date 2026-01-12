@@ -75,7 +75,7 @@ h1:hover, h2:hover, h3:hover, p:hover {
     color: blue !important; 
     text-decoration-line: overline;
 	text-decoration-color: hsla(0, 100%, 80%, 0.3);
-	transform: translateY(-10%);
+	transform: translateX(10%);
 }
 
 [data-testid="stFileUploaderDropzone"] [data-testid="stBaseButton-secondary"]:hover{
@@ -109,6 +109,7 @@ h1:hover, h2:hover, h3:hover, p:hover {
 	background-color: #F0FFF0;
 	color: black;
 }
+
 
 
 

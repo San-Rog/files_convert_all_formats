@@ -35,15 +35,15 @@ class messages():
         self.suffix = args[1]
         self.nFiles = args[2]
         if self.nFiles == 1:
-            self.fileFinal = f'zipado_sozinho_{self.suffix}.zip'
+            self.fileFinal = f'zipado_isolado_{self.suffix}.zip'
         else:
             self.fileFinal = f'zipado_múltiplos_{self.suffix}.zip'
         if None not in args:
             self.mensResult()
     
     def mensResult(self):
-        exclRep = st.session_state[replDown[0]]
-        if not exclRep: 
+        exclRep = st.session_state[replDown[0]]        
+        if exclRep: 
             arrayFile = ['arquivo não redundante', 'arquivos não redundantes']
         else:
             arrayFile = ['arquivo repetido', 'arquivos com e sem redundância']
@@ -70,9 +70,9 @@ class messages():
                                               key='buttDown', 
                                               help='Grava o arquivo zipado na pasta Download.')
      
-    @st.dialog('🆘 Falha no app!')
+    @st.dialog('⚠️ Falha no app❗')
     def mensOperation(self, str):
-        st.markdown(str)
+        st.markdown(f'{str} Entre em contato com o administrador da ferramenta!')
     
 class acessories():
     def __init__(self, *args):
@@ -105,9 +105,6 @@ class downOrDfFiles():
         elif self.opt == -4:
             pass
         else:
-            self.NoRepl = st.session_state[replDown[0]]
-            self.allUnique = st.session_state[replDown[1]]
-            self.allMult = st.session_state[replDown[2]]
             buttSel = True
             match self.pos:
                 case 0: 
@@ -887,8 +884,8 @@ class downOrDfFiles():
                         exprDif = 'vezes'
                     listSit.append(f'repetido {difValue} {exprDif}')
             if isRepet:
-                st.markdown(f'📜 Arquivos redundantes')
-                repls = ['Recusar?']
+                st.markdown(f'📚 Arquivos redundantes')
+                repls = ['Recusar❓']
                 dfRepls = {'Arquivos repetidos':repls}
                 optRepl = st.dataframe(dfRepls, 
                                        selection_mode="single-row",
@@ -905,7 +902,7 @@ class downOrDfFiles():
                       'número de arquivos': listValues, 
                       'situação': listSit}
             sumAll = sum(list(listFile.values()))
-            st.markdown(f'📜 Detalhes ({sumAll})')
+            st.markdown(f'🖥️ Detalhes e visualização ({sumAll})')
             df = pd.DataFrame(dfDict)
             df = df.astype(str)            
             event = st.dataframe(df,
@@ -1020,8 +1017,9 @@ class main():
                             text_alignment='center')
                 self.typeFile = st.selectbox(f'📂 Tipos de arquivo ({nIni})', self.typeExt,
                                                       help=f'Selecionar a extensão desejada. Para reiniciar, ' 
-                                                            'escolher a linha em branco. O comando deslizante ao lado, se ligado, desconsidera ' 
-                                                            'os arquivos redundantes; por padrão, contudo, essa redundância é permitida.') 
+                                                            'escolher a linha em branco. Por padrão, arquivos repetidos'
+                                                            'são admitidos. Para evitar isso, acione o botão "Informações" e marque '
+                                                            'a opção "Recusar".') 
                 if not self.typeFile: 
                     upDisabled = True
                     repDisabled = True
@@ -1032,11 +1030,12 @@ class main():
                     repDisabled = False
                     self.typeStr = f':red[**{self.typeFile}**]'
                     st.space(size="small")  
-                self.upLoad = st.file_uploader(f'📙 Arraste/escolha dois ou mais arquivos {self.typeStr}.', 
+                self.upLoad = st.file_uploader(f'☰ Arraste/escolha um ou múltiplos arquivos {self.typeStr}.', 
                                                type=self.typeFile, accept_multiple_files=True, key=self.keyUp, 
                                                disabled=upDisabled, 
-                                               help='É integrado de todos os arquivos selecionados, mesmo que se repitam.' \
-                                                    'No momento do download, contudo, serão tratados como se não se repetissem.') 
+                                               help='É integrado de todos os arquivos selecionados, mesmo que se repitam. ' 
+                                                    'No momento do download, o usuário poderá acionar o botão "Informações" e '
+                                                    'marcar a opção "Recusar". Só é ativado quando houver extensão escolhida.') 
         with colUpload:  
             try:
                 self.files = list(set([f'{file.name}{sepFile}{file.size}' for file in self.upLoad]))
@@ -1047,9 +1046,8 @@ class main():
                 allNames.clear()
             if not self.typeFile:
                 self.configImageEmpty(4)
-            for key in replDown:
-                if key not in st.session_state:
-                    st.session_state[key] = False
+            if replDown[0] not in st.session_state:
+                st.session_state[replDown[0]] = False
             self.repFile = st.session_state[replDown[0]]
             if self.typeFile:
                 self.ext = self.typeFile.lower()
@@ -1115,6 +1113,16 @@ class main():
                                   6: [4, 0], 7: [5, 0], 8: [6, 0], 9: [7, 0], 10: [8, 0], 11: [9, 0]}
                     if self.upLoad:
                         filesAll, filesRep, nNotRep, nRep, exprLoad, exprNotRep, exprRep = self.allNotRep()
+                        nUps = self.nUpLoads
+                        textUp, textNotRep, textRep = ('', '', '')
+                        dctSize = {0: [nUps, textUp, '', ''], 
+                                   1: [nNotRep, textNotRep, ' não repetido', ' não repetidos'], 
+                                   2: [nRep, textRep, ' repetido', ' repetidos']}
+                        for dct, size in dctSize.items():
+                            if size[0] == 1:
+                               size[1] = f'do arquivo{size[2]}'
+                            else:
+                               size[1] = f'dos arquivos{size[3]}'     
                         self.files.insert(0, '')
                         indExt = allExts.index(self.ext)
                         try:
@@ -1126,7 +1134,8 @@ class main():
                                           vertical_alignment='bottom'):
                             colTotal, colNotRep, colRep = st.columns(spec=3, width='stretch', 
                                                                      vertical_alignment='center')
-                            with colTotal.popover(f'Informações ({self.nUpLoads})', icon='ℹ️', width='stretch'): 
+                            with colTotal.popover(f'Informações ({nUps})', icon='ℹ️', width='stretch', 
+                                                  help=f'Abre tela com detalhes e possibilidade de visualização {dctSize[0][1]}.'): 
                                 downOrDfFiles([filesAll, self.files[1:], filesRep], None, None, self.ext, -1, None, None)
                                 if len(fileSelDf) > 0: 
                                     self.elem = fileSelDf[0]
@@ -1137,17 +1146,18 @@ class main():
                                         place = st.empty()
                                         place.write('')
                                         objMens = messages(None, None, None)
-                                        objMens.mensOperation(f'🚫 Houve o seguinte erro\n *:blue-background[{error}]*❗')                                        
+                                        objMens.mensOperation(f'🚫 Houve o seguinte erro\n *:blue-background[{error}]*.')                                        
                                 st.text('')   
-                            with colNotRep.popover(f'{exprNotRep} ({nNotRep})', icon='👍', width='stretch'):
+                            with colNotRep.popover(f'{exprNotRep} ({nNotRep})', icon='👍', width='stretch', 
+                                                   help=f'Abre tela com detalhes {dctSize[1][1]}.'):
                                 st.text(f'✒️ Sem redundância ({nNotRep})', width=720)
                                 downOrDfFiles([filesAll, self.files[1:], filesRep], None, None, None, -2, None, None)
                             if nRep == 0:
                                 disabledRep = True
                             else:
                                 disabledRep = False
-                            with colRep.popover(f'{exprRep} ({nRep})', icon='👎', width='stretch', 
-                                                disabled=disabledRep):
+                            with colRep.popover(f'{exprRep} ({nRep})', icon='👎', width='stretch', disabled=disabledRep, 
+                                                help=f'Abre tela com detalhes {dctSize[2][1]}.'):
                                 st.text(f'✒️ Com redundância ({nRep})', width=720)
                                 downOrDfFiles([filesAll, self.files[1:], filesRep], None, None, None, -3, None, None)  
                         if any(self.allButtons):
@@ -1165,7 +1175,7 @@ class main():
                                     self.preInvoke()  
                                 except Exception as error:  
                                     objMens = messages(None, None, None)
-                                    objMens.mensOperation(f'⚠️ Houve o seguinte erro\n *:yellow-background[{error}]*❗')
+                                    objMens.mensOperation(f'⚠️ Houve o seguinte erro\n *:yellow-background[{error}]*.')
                             
     def preInvoke(self):
         if st.session_state[replDown[0]]:
@@ -1211,7 +1221,7 @@ class main():
         with st.spinner('Aguarde a exibição do arquivo na tela...'):
             objDown = downOrDfFiles(self.filesReadDf, None, None, self.ext, None, None, None)
             if self.loc == 1:
-                exprFile = f'🔰 Aba do arquivo :red[**{nameFile}**]'
+                exprFile = f'📋 Aba do arquivo :red[**{nameFile}**]'
                 objDown.csvDf(exprFile)   
             elif self.loc in [2, 3, 4]:
                 exprFile = f' de :red[**{nameFile}**]'
@@ -1329,7 +1339,7 @@ if __name__ == '__main__':
     allDfs = {}
     allEngines = ['openpyxl', 'xlrd', 'odf']
     allExts = ['csv', 'xls', 'xlsx', 'ods']
-    replDown = ['selRepl', 'selDownUnique', 'selDownMult']
+    replDown = ['selRepl']
     external = configExternal(None)
     external.configCss()
     main()

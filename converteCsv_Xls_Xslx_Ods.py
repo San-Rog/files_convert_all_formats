@@ -45,10 +45,11 @@ class messages():
     
     def mensResult(self):
         exclRep = st.session_state[replDown[0]]        
-        if not exclRep: 
-            arrayFile = ['arquivo não redundante', 'arquivos não redundantes']
+        exclRep = st.session_state[replDown[0]]        
+        if exclRep: 
+            arrayFile = ['arquivo (sem redundância)', 'arquivos (sem redundância)']
         else:
-            arrayFile = ['arquivo repetido', 'arquivos com e sem redundância']
+            arrayFile = ['arquivo (com redundância)', 'arquivos (com redundância)']
         if self.nFiles <= 1:
             exprFile = [arrayFile[0], 'baixá-lo', 'abri-lo']
         else:
@@ -1345,5 +1346,6 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+
 
 

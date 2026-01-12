@@ -34,7 +34,9 @@ class messages():
         self.fileTmp = args[0]
         self.suffix = args[1]
         self.nFiles = args[2]
-        if self.nFiles == 1:
+        if self.nFiles == 0:
+            self.mensOperation(f'🚨 Não foi gerado arquivo algum!')
+        elif self.nFiles == 1:
             self.fileFinal = f'zipado_isolado_{self.suffix}.zip'
         else:
             self.fileFinal = f'zipado_múltiplos_{self.suffix}.zip'

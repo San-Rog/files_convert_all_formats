@@ -1150,7 +1150,7 @@ class main():
                                 st.text('')   
                             with colNotRep.popover(f'{exprNotRep} ({nNotRep})', icon='👍', width='stretch', 
                                                    help=f'Abre tela com detalhes {dctSize[1][1]}.'):
-                                st.text(f'✒️ Sem redundância ({nNotRep})', width=720)
+                                st.markdown(f'✒️ Sem redundância ({nNotRep})', width=720)
                                 downOrDfFiles([filesAll, self.files[1:], filesRep], None, None, None, -2, None, None)
                             if nRep == 0:
                                 disabledRep = True
@@ -1158,7 +1158,7 @@ class main():
                                 disabledRep = False
                             with colRep.popover(f'{exprRep} ({nRep})', icon='👎', width='stretch', disabled=disabledRep, 
                                                 help=f'Abre tela com detalhes {dctSize[2][1]}.'):
-                                st.text(f'✒️ Com redundância ({nRep})', width=720)
+                                st.markdown(f'✒️ Com redundância ({nRep})', width=720)
                                 downOrDfFiles([filesAll, self.files[1:], filesRep], None, None, None, -3, None, None)  
                         if any(self.allButtons):
                             if self.loc in [1, 2, 3, 4]: 
@@ -1343,3 +1343,4 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+

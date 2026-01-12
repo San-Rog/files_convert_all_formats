@@ -45,15 +45,16 @@ class messages():
     
     def mensResult(self):
         exclRep = st.session_state[replDown[0]]        
-        exclRep = st.session_state[replDown[0]]        
-        if exclRep: 
-            arrayFile = ['arquivo (sem redundância)', 'arquivos (sem redundância)']
+        if self.nFiles == 1:
+            if exclRep: 
+                exprFile = ['arquivo (excluída a repetição)', 'baixá-lo', 'abri-lo']
+            else:
+                exprFile = ['arquivo (admitida a repetição)', 'baixá-lo', 'abri-lo']
         else:
-            arrayFile = ['arquivo (com redundância)', 'arquivos (com redundância)']
-        if self.nFiles <= 1:
-            exprFile = [arrayFile[0], 'baixá-lo', 'abri-lo']
-        else:
-            exprFile = [arrayFile[1], 'baixá-los', 'abri-los']
+            if exclRep:
+                exprFile = ['arquivos (excluída a repetição)', 'baixá-los', 'abri-los']
+            else:
+                exprFile = ['arquivos (admitida a repetição)', 'baixá-los', 'abri-los']        
         if self.suffix in ['tsv', 'yaml', 'json', 'toml', 'txt']:
             mensStr = f':blue[**{self.fileFinal}**] com  ***{self.nFiles} {exprFile[0]}***. Para {exprFile[1]}, ' \
             f'clique no botão ao lado 👉. (Utilize **Bloco de Notas** ou aplicativo similar para {exprFile[2]}.)'
@@ -1346,6 +1347,7 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+
 
 
 

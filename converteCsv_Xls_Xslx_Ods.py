@@ -631,7 +631,15 @@ class downOrDfFiles():
         for f, file in enumerate(self.files):
             self.file = file
             self.prepaireCsv()
-            self.bytesFiles()
+            self.df = pd.read_csv(self.fileOut, encoding='utf-8-sig').fillna('')
+            self.renameHead()
+            output = BytesIO()
+            self.df.to_csv(output, sep='\t', index=False)
+            csvBytes = output.getvalue()
+            self.fileOut = f'{self.nameFile}.{self.ext}'
+            zips = (self.fileOut, csvBytes)
+            self.filesZip.append(zips) 
+            self.nFiles += 1
                
     def csvDf(self, exprFile):
         file = self.files[0]
@@ -1347,6 +1355,7 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+
 
 
 

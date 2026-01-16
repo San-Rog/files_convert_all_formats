@@ -637,8 +637,9 @@ class downOrDfFiles():
             output = BytesIO()
             self.df.to_csv(output, sep='\t', index=False)
             csvBytes = output.getvalue()
+            csvBytesStr = csvBytes.decode('utf-8')
             self.fileOut = f'{self.nameFile}.{self.ext}'
-            zips = (self.fileOut, csvBytes)
+            zips = (self.fileOut, ftfy.fix_text(csvBytesStr))
             self.filesZip.append(zips) 
             self.nFiles += 1
                
@@ -1356,6 +1357,7 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+
 
 
 

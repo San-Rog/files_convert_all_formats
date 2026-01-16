@@ -790,12 +790,17 @@ class downOrDfFiles():
                                     processedRow[key] = float(value)
                                 except ValueError:
                                     processedRow[key] = value 
-                    dataAll.append(processedRow)
+                    newRow = {}
+                    for proc, dRow in processedRow.items():
+                        proc = ftfy.fix_text(str(proc))
+                        dRow = ftfy.fix_text(str(dRow))
+                        newRow[proc] = dRow
+                    dataAll.append(newRow)
             self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}.{self.ext}'
-            with open(self.fileOut, mode='w', encoding='utf-8') as tomlFile:
+            with open(self.fileOut, mode='w') as tomlFile:
                 toml.dump({'dados completos': dataAll}, tomlFile)
             self.bytesFiles()
-    
+            
     def csvTxt(self):
         for f, file in enumerate(self.files):
             self.file = file
@@ -1361,6 +1366,7 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+
 
 
 

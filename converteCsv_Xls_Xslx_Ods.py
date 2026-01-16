@@ -5,6 +5,7 @@ import io
 import csv
 import time
 import yaml
+import ftfy
 import toml
 import zipfile
 import regex as re
@@ -1355,6 +1356,7 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+
 
 
 

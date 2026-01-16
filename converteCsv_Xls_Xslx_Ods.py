@@ -797,16 +797,20 @@ class downOrDfFiles():
             self.bytesFiles()
     
     def csvTxt(self):
-        try:
-            for f, file in enumerate(self.files):
-                self.file = file
-                self.prepaireCsv()
-                df = pd.read_csv(self.fileOut).fillna('')
-                self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}.{self.ext}'
-                df.to_csv(self.fileOut, index=False, header=True)
-                self.bytesFiles()
-        except:
-            pass
+        for f, file in enumerate(self.files):
+            self.file = file
+            self.prepaireCsv()
+            self.df = pd.read_csv(self.fileOut).fillna('')
+            self.df = self.df.astype(str)
+            self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}_prov.{self.ext}'
+            self.df.to_csv(self.fileOut, index=False, header=True)
+            with open(self.fileOut, 'r', encoding='utf-8') as arq:
+                contentTxt = arq.read()
+            newContent = ftfy.fix_text(contentTxt)
+            self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}.{self.ext}'
+            with open(self.fileOut, 'w', encoding='utf-8') as arq:
+                arq.write(newContent)
+            self.bytesFiles()
     
     def csvPdf(self):
         for f, file in enumerate(self.files):
@@ -1357,6 +1361,7 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+
 
 
 

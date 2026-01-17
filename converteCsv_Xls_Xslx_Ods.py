@@ -55,7 +55,7 @@ class messages():
             if exclRep:
                 exprFile = ['arquivos (excluída a repetição)', 'baixá-los', 'abri-los']
             else:
-                exprFile = ['arquivos (admitida a repetição)', 'baixá-los', 'abri-los']        
+                exprFile = ['arquivos (admitida a repetição)', 'baixá-los', 'abri-los']
         if self.suffix in ['tsv', 'yaml', 'json', 'toml', 'txt']:
             mensStr = f':blue[**{self.fileFinal}**] com  ***{self.nFiles} {exprFile[0]}***. Para {exprFile[1]}, ' \
             f'clique no botão ao lado 👉. (Utilize **Bloco de Notas** ou aplicativo similar para {exprFile[2]}.)'
@@ -656,7 +656,7 @@ class downOrDfFiles():
         self.expr = ''
         self.exprLine, self.exprCol, self.exprCells = [w for w in range(3)]
         self.returnRowCol()
-        self.place.markdown(f'{self.exprFile} (*{self.expr}*)') 
+        self.place.markdown(f'{self.exprFile} (*{self.expr}*)')
         st.write(self.df)
         
     def returnRowCol(self):
@@ -800,7 +800,7 @@ class downOrDfFiles():
             with open(self.fileOut, mode='w') as tomlFile:
                 toml.dump({'dados completos': dataAll}, tomlFile)
             self.bytesFiles()
-            
+    
     def csvTxt(self):
         for f, file in enumerate(self.files):
             self.file = file
@@ -1036,7 +1036,7 @@ class main():
             with st.container(border=4, key='contType', gap='small', height="stretch"):
                 colStart, colIco = st.columns([0.5, 20], vertical_alignment='top')
                 st.markdown('<div id="start"></div>', unsafe_allow_html=True)
-                colIco.markdown('❇️ Seleção de tipo + arrastamento/escolha de arquivos', unsafe_allow_html=True, 
+                colIco.markdown('❇️Seleção de tipo + arrastamento/escolha de arquivos', unsafe_allow_html=True, 
                             text_alignment='center')
                 self.typeFile = st.selectbox(f'📂 Tipos de arquivo ({nIni})', self.typeExt,
                                                       help=f'Selecionar a extensão desejada. Para reiniciar, ' 
@@ -1300,7 +1300,7 @@ class main():
                 if filesFind[nameGlobal] > 1:
                     continue
                 dataBytes = upLoad.getvalue()
-                dataString = dataBytes.decode('ISO-8859-1')
+                dataString = dataBytes.decode('utf-8-sig')
                 self.fileMemory = io.StringIO(dataString)
                 sep = self.detectSep()
                 readerCsv = csv.reader(self.fileMemory, delimiter=sep)
@@ -1328,7 +1328,7 @@ class main():
                     nameFile, ext = os.path.splitext(nameGlobal)
                     nameSize = f'{nameFile}_{upLoad.size}'
                     dataBytes = upLoad.getvalue()
-                    dataString = dataBytes.decode('ISO-8859-1')
+                    dataString = dataBytes.decode('utf-8-sig')
                     self.fileMemory = io.StringIO(dataString)
                     sep = self.detectSep()
                     readerCsv = csv.reader(self.fileMemory, delimiter=sep)
@@ -1366,12 +1366,3 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
-
-
-
-
-
-
-
-
-

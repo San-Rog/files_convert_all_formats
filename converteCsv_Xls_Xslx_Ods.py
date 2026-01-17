@@ -316,7 +316,7 @@ class downOrDfFiles():
                     htmlStr = df.to_html(index=False, border=1, classes='dataframe')
                 except:
                     htmlStr = df.to_html()
-                with open(self.fileOut, 'w', encoding='utf-8') as f:
+                with open(self.fileOut, 'w', encoding='utf-8-sig') as f:
                     f.write(htmlStr)
                 self.bytesFiles()
             self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}.{self.ext}'
@@ -341,12 +341,12 @@ class downOrDfFiles():
                     pass
                 if self.index == 0:
                     htmlStr = self.df.to_html()
-                    with open(self.fileOut, 'w', encoding='utf-8') as f:
+                    with open(self.fileOut, 'w', encoding='utf-8-sig') as f:
                         f.write(htmlStr)
                 elif self.index == 4:
                     yamlData = {}
                     yamlData[name] = df.to_dict(orient='records')
-                    with open(self.fileOut, 'w', encoding='utf-8') as outfile:
+                    with open(self.fileOut, 'w', encoding='utf-8-sig') as outfile:
                         yaml.dump(yamlData, outfile, sort_keys=False, indent=4, allow_unicode=True)
                 elif self.index == 6:
                     htmlTable = df.to_html(index=True, border=1, classes='dataframe', na_rep='', 
@@ -354,12 +354,12 @@ class downOrDfFiles():
                     external = configExternal(None)
                     xhtmlContent = external.includeXhtml(htmlTable)
                     self.fileOut = f'{self.nameFile}.{self.ext}'
-                    with open(self.fileOut, 'w', encoding='utf-8') as f:
+                    with open(self.fileOut, 'w', encoding='utf-8-sig') as f:
                         f.write(xhtmlContent)                
                 elif self.index == 7:
                     tomData = {}
                     tomData[name] = df.to_dict(orient='records')
-                    with open(self.fileOut, 'w', encoding='utf-8') as outfile:
+                    with open(self.fileOut, 'w', encoding='utf-8-sig') as outfile:
                         yaml.dump(tomData, outfile, sort_keys=False, indent=4, allow_unicode=True)
                 self.bytesFiles()
             self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}.{self.ext}'
@@ -545,17 +545,17 @@ class downOrDfFiles():
                         combinedDf.to_excel(self.fileOut, index=False, engine=self.engine, na_rep='')
                 elif category == 2:
                     htmlStr = combinedDf.to_html(index=False, border=1, classes='dataframe')
-                    with open(self.fileOut, 'w', encoding='utf-8') as f:
+                    with open(self.fileOut, 'w', encoding='utf-8-sig') as f:
                         f.write(htmlStr)
                 elif category == 3:
                     if self.index == 0:
                         htmlStr = combinedDf.to_html()
-                        with open(self.fileOut, 'w', encoding='utf-8') as f:
+                        with open(self.fileOut, 'w', encoding='utf-8-sig') as f:
                             f.write(htmlStr)
                     elif self.index == 4:
                         yamlData = {}
                         yamlData[name] = combinedDf.to_dict(orient='records')
-                        with open(self.fileOut, 'w', encoding='utf-8') as outfile:
+                        with open(self.fileOut, 'w', encoding='utf-8-sig') as outfile:
                             yaml.dump(yamlData, outfile, sort_keys=False, indent=4, allow_unicode=True)
                     elif self.index == 6:
                         htmlTable = combinedDf.to_html(index=True, border=1, classes='dataframe', na_rep='', 
@@ -563,12 +563,12 @@ class downOrDfFiles():
                         external = configExternal(None)
                         xhtmlContent = external.includeXhtml(htmlTable)
                         self.fileOut = f'{self.nameFile}.{self.ext}'
-                        with open(self.fileOut, 'w', encoding='utf-8') as f:
+                        with open(self.fileOut, 'w', encoding='utf-8-sig') as f:
                             f.write(xhtmlContent)                
                     elif self.index == 7:
                         tomData = {}
                         tomData[name] = combinedDf.to_dict(orient='records')
-                        with open(self.fileOut, 'w', encoding='utf-8') as outfile:
+                        with open(self.fileOut, 'w', encoding='utf-8-sig') as outfile:
                             yaml.dump(tomData, outfile, sort_keys=False, indent=4, allow_unicode=True)
                 elif category == 6:
                     self.df = combinedDf
@@ -637,7 +637,7 @@ class downOrDfFiles():
             output = BytesIO()
             self.df.to_csv(output, sep='\t', index=False)
             csvBytes = output.getvalue()
-            csvBytesStr = csvBytes.decode('utf-8')
+            csvBytesStr = csvBytes.decode('utf-8-sig')
             self.fileOut = f'{self.nameFile}.{self.ext}'
             zips = (self.fileOut, ftfy.fix_text(csvBytesStr))
             self.filesZip.append(zips) 
@@ -742,7 +742,7 @@ class downOrDfFiles():
             df = pd.read_csv(self.fileOut).fillna('')
             self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}.{self.ext}'
             dataDict = df.to_dict(orient='records')
-            with open(self.fileOut, 'w', encoding='utf-8') as outfile:
+            with open(self.fileOut, 'w', encoding='utf-8-sig') as outfile:
                 yaml.dump(dataDict, outfile, sort_keys=False, indent=4, allow_unicode=True)
             self.bytesFiles()
             
@@ -755,7 +755,7 @@ class downOrDfFiles():
             external = configExternal(None)
             xhtmlContent = external.includeXhtml(htmlTable)
             self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}.{self.ext}'
-            with open(self.fileOut, 'w', encoding='utf-8') as f:
+            with open(self.fileOut, 'w', encoding='utf-8-sig') as f:
                 f.write(xhtmlContent)
             self.bytesFiles()
                     
@@ -773,7 +773,7 @@ class downOrDfFiles():
             dataAll = []
             self.file = file
             self.prepaireCsv()
-            with open(self.fileOut, mode='r', encoding='utf-8') as csvFile:
+            with open(self.fileOut, mode='r', encoding='utf-8-sig') as csvFile:
                 csvReader = csv.DictReader(csvFile)
                 for row in csvReader:
                     processedRow = {}
@@ -809,11 +809,11 @@ class downOrDfFiles():
             self.df = self.df.astype(str)
             self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}_prov.{self.ext}'
             self.df.to_csv(self.fileOut, index=False, header=True)
-            with open(self.fileOut, 'r', encoding='utf-8') as arq:
+            with open(self.fileOut, 'r', encoding='utf-8-sig') as arq:
                 contentTxt = arq.read()
             newContent = ftfy.fix_text(contentTxt)
             self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}.{self.ext}'
-            with open(self.fileOut, 'w', encoding='utf-8') as arq:
+            with open(self.fileOut, 'w', encoding='utf-8-sig') as arq:
                 arq.write(newContent)
             self.bytesFiles()
     

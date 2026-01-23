@@ -119,10 +119,10 @@ h1:hover, h2:hover, h3:hover, p:hover {
 
 .stPopover button:active{
 	background-color: yellow;
-	color: brown;
-	transform: translateX(5%); 
+	color: brown; 
 	cursor: wait;
 }
+
 
 
 

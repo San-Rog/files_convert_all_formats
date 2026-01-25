@@ -622,9 +622,9 @@ class downOrDfFiles():
         sheet.title = self.sheetName        
         for data in self.dataFile:
             try:
-                newData = [str(item).encode('ISO-8859-1').decode('utf-8-sig') for item in data]
-            except: 
                 newData = [str(item).encode('utf-8-sig').decode('utf-8-sig') for item in data]
+            except: 
+                newData = [str(item).encode('ISO-8859-1').decode('utf-8-sig') for item in data]
             sheet.append(newData)
         wb.save(self.fileOut)
     
@@ -1034,10 +1034,7 @@ class main():
         self.keyRep = 'keyRep'
         with colType:
             with st.container(border=4, key='contType', gap='small', height="stretch"):
-                colStart, colIco = st.columns([0.5, 20], vertical_alignment='top')
                 st.markdown('<div id="start"></div>', unsafe_allow_html=True)
-                colIco.markdown('❇️Seleção de tipo + arrastamento/escolha de arquivos', unsafe_allow_html=True, 
-                            text_alignment='center')
                 self.typeFile = st.selectbox(f'📂 Tipos de arquivo ({nIni})', self.typeExt,
                                                       help=f'Selecionar a extensão desejada. Para reiniciar, ' 
                                                             'escolher a linha em branco. Por padrão, arquivos repetidos'
@@ -1200,6 +1197,32 @@ class main():
                                     objMens = messages(None, None, None)
                                     objMens.mensOperation(f'⚠️ Houve o seguinte erro\n *:yellow-background[{error}]*.')
                             
+        with st.expander(label='Arquivos tratados por este aplicativo.', 
+                                 icon=':material/add_ad:'):
+            self.formatExpander()
+            optData = pd.DataFrame(self.expandFiles, 
+                                   index = self.index)
+            st.table(optData)       
+            
+    def formatExpander(self):
+        filesExt = {'CSV': 'https://pt.wikipedia.org/wiki/Comma-separated_values', 
+                    'DOCX': 'https://www.onlyoffice.com/blog/pt-br/2024/03/docx', 
+                    'HTML': 'https://pt.wikipedia.org/wiki/HTML', 
+                    'JSON': 'https://en.wikipedia.org/wiki/JSON', 
+                    'ODS': 'https://pt.wikipedia.org/wiki/OpenDocument',
+                    'PDF': 'https://en.wikipedia.org/wiki/PDF', 
+                    'TOML': 'https://en.wikipedia.org/wiki/TOML', 
+                    'TSV': 'https://en.wikipedia.org/wiki/Tab-separated_values', 
+                    'TXT': 'https://en.wikipedia.org/wiki/Text_file', 
+                    'XHTML': 'https://en.wikipedia.org/wiki/XHTML', 
+                    'XLS': 'https://en.wikipedia.org/wiki/XLS', 
+                    'XLSX': 'https://www.onlyoffice.com/blog/pt-br/2024/03/xlsx', 
+                    'YAML': 'https://en.wikipedia.org/wiki/YAML'}
+        allExts = list(filesExt.keys())
+        self.expandFiles = {'Tipo de arquivo': allExts, 
+                            'URL': list(filesExt.values())}
+        self.index = [w + 1 for w in range(len(allExts))]
+    
     def preInvoke(self):
         if st.session_state[replDown[0]]:
             self.cutFilesRep()
@@ -1278,7 +1301,7 @@ class main():
     def configImageEmpty(self, border):
         with st.container(border=border, key='contZero', gap='small'):
             st.markdown(f'0️⃣  seleção de tipo e/ou arquivo', text_alignment='center') 
-            st.image('zero.jpg') 
+            st.image(r'zero.jpg') 
     
     def setSessionState(self, state):
         for disabled in self.disableds:

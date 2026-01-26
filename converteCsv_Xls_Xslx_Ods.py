@@ -1197,7 +1197,7 @@ class main():
                                     objMens = messages(None, None, None)
                                     objMens.mensOperation(f'⚠️ Houve o seguinte erro\n *:yellow-background[{error}]*.')                            
         with st.expander(label='Arquivos tratados por este aplicativo.', 
-                                 icon=':material/lightbulb:'):
+                                 icon=':material/keep:'):
             self.formatExpander()
             optData = pd.DataFrame(self.expandFiles, 
                                    index = self.index)
@@ -1388,4 +1388,5 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+
 

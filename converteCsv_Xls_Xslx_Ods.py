@@ -48,23 +48,22 @@ class messages():
         exclRep = st.session_state[replDown[0]]        
         if self.nFiles == 1:
             if exclRep: 
-                exprFile = ['arquivo (excluída a repetição)', 'baixá-lo', 'abri-lo']
+                exprFile = ['arquivo (excluída a redundância)', 'baixá-lo', 'abri-lo']
             else:
-                exprFile = ['arquivo (admitida a repetição)', 'baixá-lo', 'abri-lo']
+                exprFile = ['arquivo', 'baixá-lo', 'abri-lo']
         else:
             if exclRep:
-                exprFile = ['arquivos (excluída a repetição)', 'baixá-los', 'abri-los']
+                exprFile = ['arquivos (excluída a redundância)', 'baixá-los', 'abri-los']
             else:
-                exprFile = ['arquivos (admitida a repetição)', 'baixá-los', 'abri-los']
+                exprFile = ['arquivos (aceita a redundância)', 'baixá-los', 'abri-los']
         if self.suffix in ['tsv', 'yaml', 'json', 'toml', 'txt']:
             mensStr = f':blue[**{self.fileFinal}**] com  ***{self.nFiles} {exprFile[0]}***. Para {exprFile[1]}, ' \
-            f'clique no botão ao lado 👉. (Utilize **Bloco de Notas** ou aplicativo similar para {exprFile[2]}.)'
+            f'pressione (👇) o botão ao lado ➜. (Utilize **Bloco de Notas** ou aplicativo similar para {exprFile[2]}.)'
         else:
             mensStr = f':blue[**{self.fileFinal}**] com  ***{self.nFiles} {exprFile[0]}***. Para {exprFile[1]}, ' \
-            'clique no botão ao lado 👉.' 
+            'pressione (👇) o botão ao lado ➜.' 
         mensStr = textwrap.fill(mensStr, width=80)
         colMens, colZip = st.columns([21, 3], width='stretch', vertical_alignment='center')
-        colMens.success(mensStr, icon='✔️',  width='stretch')                              
         with open(self.fileTmp, "rb") as file:
             buttDown = colZip.download_button(label='',
                                               data=file,
@@ -74,6 +73,7 @@ class messages():
                                               width='stretch', 
                                               key='buttDown', 
                                               help='Grava o arquivo zipado na pasta Download.')
+        colMens.success(mensStr, icon='✔️',  width='stretch')
      
     @st.dialog('⚠️ Falha no app❗')
     def mensOperation(self, str):
@@ -1032,176 +1032,185 @@ class main():
         self.keyUp = 'zero'
         self.keyFile = 'typeFile'
         self.keyRep = 'keyRep'
-        with colType:
-            with st.container(border=4, key='contType', gap='small', height="stretch"):
-                st.markdown('<div id="start"></div>', unsafe_allow_html=True)
-                self.typeFile = st.selectbox(f'📂 Tipos de arquivo ({nIni})', self.typeExt,
-                                                      help=f'Selecionar a extensão desejada. Para reiniciar, ' 
-                                                            'escolher a linha em branco. Por padrão, arquivos repetidos'
-                                                            'são admitidos. Para evitar isso, acione o botão "Informações" e marque '
-                                                            'a opção "Recusar".') 
-                if not self.typeFile: 
-                    upDisabled = True
-                    repDisabled = True
-                    self.typeStr = ''
-                else:
-                    self.loc = self.typeExt.index(self.typeFile)
-                    upDisabled = False
-                    repDisabled = False
-                    self.typeStr = f':red[**{self.typeFile}**]'
-                    st.space(size="small")  
-                self.upLoad = st.file_uploader(f'☰ Arraste/escolha um ou múltiplos arquivos {self.typeStr}.', 
-                                               type=self.typeFile, accept_multiple_files=True, key=self.keyUp, 
-                                               disabled=upDisabled, 
-                                               help='É integrado de todos os arquivos selecionados, mesmo que se repitam. ' 
-                                                    'No momento do download, o usuário poderá acionar o botão "Informações" e '
-                                                    'marcar a opção "Recusar". Só é ativado quando houver extensão escolhida.') 
-        with colUpload:  
-            try:
-                self.files = list(set([f'{file.name}{sepFile}{file.size}' for file in self.upLoad]))
-                for file in self.upLoad: 
-                    allNames.append(f'{file.name}{sepFile}{file.size}')        
-            except:
-                self.files = [] 
-                allNames.clear()
-            if not self.typeFile:
-                self.configImageEmpty(4)
-            if replDown[0] not in st.session_state:
-                st.session_state[replDown[0]] = False
-            self.repFile = st.session_state[replDown[0]]
-            if self.typeFile:
-                self.ext = self.typeFile.lower()
-                with st.container(border=4, key='contUpload', gap='small', height='content', 
-                                  vertical_alignment='center'):
-                    self.nUpLoads = len(self.upLoad)
-                    match self.loc:
-                        case 1:
-                            self.exts = {self.engine[1]: ['xls', 'xlsx', 'html'], 'odf': ['ods'], 'tsv': ['tsv'], 
-                                         'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
-                                         'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']}  
-                        case 2: 
-                            self.exts = {self.engine[2]: ['csv'.lower(), 'xlsx', 'html'], 'odf': ['ods'], 'tsv': ['tsv'], 
-                                         'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
-                                         'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']}  
-                        case 3: 
-                            self.exts = {self.engine[3]: ['csv'.lower(), 'xls', 'html'], 'odf': ['ods'], 'tsv': ['tsv'], 
-                                         'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
-                                         'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']} 
-                        case 4: 
-                            self.exts = {self.engine[3]: ['xls', 'xlsx', 'html'], 'odf': ['csv'], 'tsv': ['tsv'], 
-                                         'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
-                                         'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']} 
-                    self.newTypes = []
-                    self.segregateTypes()
-                    self.disableds = ['disabled' + str(w) for w in range(len(self.newTypes))]
-                    if self.nUpLoads == 0:
-                        self.setSessionState(True)
+        self.expKey = 'expand'
+        with st.container(border=None):
+            if self.expKey not in st.session_state:
+                st.session_state[self.expKey] = False
+            with colType:
+                with st.container(border=4, key='contType', gap='small', height="stretch"):
+                    st.markdown('<div id="start"></div>', unsafe_allow_html=True)
+                    self.typeFile = st.selectbox(f'🗁 Tipos de arquivo ({nIni})', self.typeExt,
+                                                          help=f'Selecionar a extensão desejada. Para reiniciar, ' 
+                                                                'escolher a linha em branco. Por padrão, arquivos repetidos'
+                                                                'são admitidos. Para evitar isso, acione o botão "Informações" e marque '
+                                                                'a opção "Recusar".') 
+                    if not self.typeFile: 
+                        upDisabled = True
+                        repDisabled = True
+                        self.typeStr = ''
                     else:
-                        self.setSessionState(False)
-                    typeLow = self.typeFile.lower()
-                    self.strFunc = ['Converter um ou mais arquivos', 'Convertendo']
-                    self.stripe = f':red[**{self.typeFile.upper()}**]'
-                    with st.container(border=None, key='contOne', gap='small', height='stretch', 
+                        self.loc = self.typeExt.index(self.typeFile)
+                        upDisabled = False
+                        repDisabled = False
+                        self.typeStr = f':red[**{self.typeFile}**]'
+                        st.space(size="small")  
+                    self.upLoad = st.file_uploader(f'☰ Arraste/escolha um ou múltiplos arquivos {self.typeStr}.', 
+                                                   type=self.typeFile, accept_multiple_files=True, key=self.keyUp, 
+                                                   disabled=upDisabled, 
+                                                   help='É integrado de todos os arquivos selecionados, mesmo que se repitam. ' 
+                                                        'No momento do download, o usuário poderá acionar o botão "Informações" e '
+                                                        'marcar a opção "Recusar". Só é ativado quando houver extensão escolhida.') 
+            with colUpload:  
+                try:
+                    self.files = list(set([f'{file.name}{sepFile}{file.size}' for file in self.upLoad]))
+                    for file in self.upLoad: 
+                        allNames.append(f'{file.name}{sepFile}{file.size}')        
+                except:
+                    self.files = [] 
+                    allNames.clear()
+                if not self.typeFile:
+                    self.configImageEmpty(4)
+                if replDown[0] not in st.session_state:
+                    st.session_state[replDown[0]] = False
+                self.repFile = st.session_state[replDown[0]]
+                if self.typeFile:
+                    self.ext = self.typeFile.lower()
+                    with st.container(border=4, key='contUpload', gap='small', height='content', 
                                       vertical_alignment='center'):
-                        nFiles = len(self.files)
-                        if nFiles <= 0:
-                            titleSel = f'Arquivo selecionado ({nFiles})'
+                        self.nUpLoads = len(self.upLoad)
+                        match self.loc:
+                            case 1:
+                                self.exts = {self.engine[1]: ['xls', 'xlsx', 'html'], 'odf': ['ods'], 'tsv': ['tsv'], 
+                                             'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
+                                             'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']}  
+                            case 2: 
+                                self.exts = {self.engine[2]: ['csv'.lower(), 'xlsx', 'html'], 'odf': ['ods'], 'tsv': ['tsv'], 
+                                             'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
+                                             'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']}  
+                            case 3: 
+                                self.exts = {self.engine[3]: ['csv'.lower(), 'xls', 'html'], 'odf': ['ods'], 'tsv': ['tsv'], 
+                                             'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
+                                             'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']} 
+                            case 4: 
+                                self.exts = {self.engine[3]: ['xls', 'xlsx', 'html'], 'odf': ['csv'], 'tsv': ['tsv'], 
+                                             'doc': ['docx'], 'yaml': ['yaml'], 'json': ['json'], 'xhtml': ['xhtml'],
+                                             'toml': ['toml'], 'txt': ['txt'], 'pdf': ['pdf']} 
+                        self.newTypes = []
+                        self.segregateTypes()
+                        nDisab = len(self.newTypes)
+                        self.disableds = ['disabled' + str(w) for w in range(len(self.newTypes))]
+                        if self.nUpLoads == 0:
+                            self.setSessionState(True) 
                         else:
-                            titleSel = f'Arquivos selecionados ({nFiles})'
-                        if nFiles > 0:
-                            opts = sorted(self.files)
-                            opts.insert(0, '')
-                        else:
-                            opts = []
-                        buttOne, buttTwo, buttThree, buttFour, buttFive, buttSix = ['' for i in range(6)]
-                        buttSeven, buttEight, buttNine, buttTen, buttEleven, buttTwelve = ['' for i in range(6)]
-                        self.allButtons = [buttOne, buttTwo, buttThree, buttFour, buttFive, buttSix, 
-                                           buttSeven, buttEight, buttNine, buttTen, buttEleven, buttTwelve]
-                        colOne, colTwo, colThree = st.columns(spec=3, width='stretch')
-                        colFour, colFive, colSix = st.columns(spec=3, width='stretch')
-                        colSeven, colEight, colNine = st.columns(spec=3, width='stretch')
-                        colTen, colEleven, colTwelve = st.columns(spec=3, width='stretch')
-                        self.colsButts = {0: [0, colOne, ':material/sync_alt:'], 1: [1, colTwo, ':material/swap_horiz:'], 
-                                          2: [2, colThree, ':material/table_convert:'], 3: [3, colFour, ':material/transform:'], 
-                                          4: [4, colFive, ':material/convert_to_text:'], 5: [5, colSix, ':material/edit_arrow_up:'], 
-                                          6: [6, colSeven, ':material/business_messages:'], 7: [7, colEight, ':material/edit_document:'], 
-                                          8: [8, colNine, ':material/edit_square:'], 9: [9, colTen, ':material/edit_note:'], 
-                                          10: [10, colEleven, ':material/box_edit:'], 11: [11, colTwelve, ':material/contract_edit:']}
-                        for b, buttObj in enumerate(self.allButtons):
-                            buttObj = self.setButtons(self.colsButts[b])
-                        indOpt = {0: [0, 0], 1: [0, 1], 2: [0, 2], 3: [1, 0], 4: [2, 0], 5: [3, 0],
-                                  6: [4, 0], 7: [5, 0], 8: [6, 0], 9: [7, 0], 10: [8, 0], 11: [9, 0]}
-                    if self.upLoad:
-                        filesAll, filesRep, nNotRep, nRep, exprLoad, exprNotRep, exprRep = self.allNotRep()
-                        nUps = self.nUpLoads
-                        textUp, textNotRep, textRep = ('', '', '')
-                        dctSize = {0: [nUps, textUp, '', ''], 
-                                   1: [nNotRep, textNotRep, ' não repetido', ' não repetidos'], 
-                                   2: [nRep, textRep, ' repetido', ' repetidos']}
-                        for dct, size in dctSize.items():
-                            if size[0] == 1:
-                               size[1] = f'do arquivo{size[2]}'
+                            self.setSessionState(False)   
+                            if self.nUpLoads == 1:
+                                textLoad = f'{self.nUpLoads} arquivo '
                             else:
-                               size[1] = f'dos arquivos{size[3]}'     
-                        self.files.insert(0, '')
-                        indExt = allExts.index(self.ext)
-                        try:
-                            self.filesRead = [] 
-                            self.segregateFiles()                                                     
-                        except:
-                            pass
-                        with st.container(border=None, key='contRepNo', gap='small', height='content', 
-                                          vertical_alignment='bottom'):
-                            colTotal, colNotRep, colRep = st.columns(spec=3, width='stretch', 
-                                                                     vertical_alignment='center')
-                            with colTotal.popover(f'Informações ({nUps})', icon='ℹ️', width='stretch', 
-                                                  help=f'Abre tela com detalhes e possibilidade de visualização {dctSize[0][1]}.'): 
-                                downOrDfFiles([filesAll, self.files[1:], filesRep], None, None, self.ext, -1, None, None)
-                                if len(fileSelDf) > 0: 
-                                    self.elem = fileSelDf[0]
-                                    nameElem = f'{sepFile}'.join(self.elem.split(sepFile)[:-1])
+                                textLoad = f'{self.nUpLoads} arquivos '
+                        typeLow = self.typeFile.lower()
+                        self.strFunc = ['Converter um ou mais arquivos', 'Convertendo']
+                        self.stripe = f':red[**{self.typeFile.upper()}**]'
+                        with st.container(border=None, key='contOne', gap='small', height='stretch', 
+                                          vertical_alignment='center'):
+                            nFiles = len(self.files)
+                            if nFiles <= 0:
+                                titleSel = f'Arquivo selecionado ({nFiles})'
+                            else:
+                                titleSel = f'Arquivos selecionados ({nFiles})'
+                            if nFiles > 0:
+                                opts = sorted(self.files)
+                                opts.insert(0, '')
+                            else:
+                                opts = []
+                            buttOne, buttTwo, buttThree, buttFour, buttFive, buttSix = ['' for i in range(6)]
+                            buttSeven, buttEight, buttNine, buttTen, buttEleven, buttTwelve = ['' for i in range(6)]
+                            self.allButtons = [buttOne, buttTwo, buttThree, buttFour, buttFive, buttSix, 
+                                               buttSeven, buttEight, buttNine, buttTen, buttEleven, buttTwelve]
+                            colOne, colTwo, colThree = st.columns(spec=3, width='stretch')
+                            colFour, colFive, colSix = st.columns(spec=3, width='stretch')
+                            colSeven, colEight, colNine = st.columns(spec=3, width='stretch')
+                            colTen, colEleven, colTwelve = st.columns(spec=3, width='stretch')
+                            self.colsButts = {0: [0, colOne, ':material/sync_alt:'], 1: [1, colTwo, ':material/swap_horiz:'], 
+                                              2: [2, colThree, ':material/table_convert:'], 3: [3, colFour, ':material/transform:'], 
+                                              4: [4, colFive, ':material/convert_to_text:'], 5: [5, colSix, ':material/edit_arrow_up:'], 
+                                              6: [6, colSeven, ':material/business_messages:'], 7: [7, colEight, ':material/edit_document:'], 
+                                              8: [8, colNine, ':material/edit_square:'], 9: [9, colTen, ':material/edit_note:'], 
+                                              10: [10, colEleven, ':material/box_edit:'], 11: [11, colTwelve, ':material/contract_edit:']}
+                            for b, buttObj in enumerate(self.allButtons):
+                                buttObj = self.setButtons(self.colsButts[b])
+                            indOpt = {0: [0, 0], 1: [0, 1], 2: [0, 2], 3: [1, 0], 4: [2, 0], 5: [3, 0],
+                                      6: [4, 0], 7: [5, 0], 8: [6, 0], 9: [7, 0], 10: [8, 0], 11: [9, 0]}
+                        if self.upLoad:
+                            filesAll, filesRep, nNotRep, nRep, exprLoad, exprNotRep, exprRep = self.allNotRep()
+                            nUps = self.nUpLoads
+                            textUp, textNotRep, textRep = ('', '', '')
+                            dctSize = {0: [nUps, textUp, '', ''], 
+                                       1: [nNotRep, textNotRep, ' não repetido', ' não repetidos'], 
+                                       2: [nRep, textRep, ' repetido', ' repetidos']}
+                            for dct, size in dctSize.items():
+                                if size[0] == 1:
+                                   size[1] = f'do arquivo{size[2]}'
+                                else:
+                                   size[1] = f'dos arquivos{size[3]}'     
+                            self.files.insert(0, '')
+                            indExt = allExts.index(self.ext)
+                            try:
+                                self.filesRead = [] 
+                                self.segregateFiles()                                                     
+                            except:
+                                pass
+                            with st.container(border=None, key='contRepNo', gap='small', height='content', 
+                                              vertical_alignment='bottom'):
+                                colTotal, colNotRep, colRep = st.columns(spec=3, width='stretch', 
+                                                                         vertical_alignment='center')
+                                with colTotal.popover(f'Informações ({nUps})', icon='ℹ️', width='stretch', 
+                                                      help=f'Abre tela com detalhes e possibilidade de visualização {dctSize[0][1]}.'): 
+                                    downOrDfFiles([filesAll, self.files[1:], filesRep], None, None, self.ext, -1, None, None)
+                                    if len(fileSelDf) > 0: 
+                                        self.elem = fileSelDf[0]
+                                        nameElem = f'{sepFile}'.join(self.elem.split(sepFile)[:-1])
+                                        try:
+                                            self.organizeDf()
+                                        except Exception as error: 
+                                            place = st.empty()
+                                            place.write('')
+                                            objMens = messages(None, None, None)
+                                            objMens.mensOperation(f'🚫 Houve o seguinte erro\n *:blue-background[{error}]*.')                                        
+                                    st.text('')   
+                                with colNotRep.popover(f'{exprNotRep} ({nNotRep})', icon='👍', width='stretch', 
+                                                       help=f'Abre tela com detalhes {dctSize[1][1]}.'):
+                                    st.markdown(f'✏️ Sem redundância ({nNotRep})', width=720)
+                                    downOrDfFiles([filesAll, self.files[1:], filesRep], None, None, None, -2, None, None)
+                                if nRep == 0:
+                                    disabledRep = True
+                                else:
+                                    disabledRep = False
+                                with colRep.popover(f'{exprRep} ({nRep})', icon='👎', width='stretch', disabled=disabledRep, 
+                                                    help=f'Abre tela com detalhes {dctSize[2][1]}.'):
+                                    st.markdown(f'🖊️ Com redundância ({nRep})', width=720)
+                                    downOrDfFiles([filesAll, self.files[1:], filesRep], None, None, None, -3, None, None)  
+                            if any(self.allButtons):
+                                if self.loc in [1, 2, 3, 4]: 
+                                    ind = self.allButtons.index(True) 
+                                    self.expr = f'{self.strFunc[1]} {textLoad} do formato {self.stripe} para o formato {self.newTypes[ind]}...'
+                                    self.index, self.opt = indOpt[ind]
+                                    self.keys = list(self.exts.keys())
+                                    self.key = self.keys[self.index]
+                                    self.values = self.exts[self.key]
+                                    self.ext = self.values[self.opt]
                                     try:
-                                        self.organizeDf()
-                                    except Exception as error: 
                                         place = st.empty()
                                         place.write('')
+                                        self.preInvoke()  
+                                    except Exception as error:  
                                         objMens = messages(None, None, None)
-                                        objMens.mensOperation(f'🚫 Houve o seguinte erro\n *:blue-background[{error}]*.')                                        
-                                st.text('')   
-                            with colNotRep.popover(f'{exprNotRep} ({nNotRep})', icon='👍', width='stretch', 
-                                                   help=f'Abre tela com detalhes {dctSize[1][1]}.'):
-                                st.markdown(f'✒️ Sem redundância ({nNotRep})', width=720)
-                                downOrDfFiles([filesAll, self.files[1:], filesRep], None, None, None, -2, None, None)
-                            if nRep == 0:
-                                disabledRep = True
-                            else:
-                                disabledRep = False
-                            with colRep.popover(f'{exprRep} ({nRep})', icon='👎', width='stretch', disabled=disabledRep, 
-                                                help=f'Abre tela com detalhes {dctSize[2][1]}.'):
-                                st.markdown(f'✒️ Com redundância ({nRep})', width=720)
-                                downOrDfFiles([filesAll, self.files[1:], filesRep], None, None, None, -3, None, None)  
-                        if any(self.allButtons):
-                            if self.loc in [1, 2, 3, 4]: 
-                                ind = self.allButtons.index(True) 
-                                self.expr = f'{self.strFunc[1]} {self.nUpLoads} do formato {self.stripe} para o formato {self.newTypes[ind]}...'
-                                self.index, self.opt = indOpt[ind]
-                                self.keys = list(self.exts.keys())
-                                self.key = self.keys[self.index]
-                                self.values = self.exts[self.key]
-                                self.ext = self.values[self.opt]
-                                try:
-                                    place = st.empty()
-                                    place.write('')
-                                    self.preInvoke()  
-                                except Exception as error:  
-                                    objMens = messages(None, None, None)
-                                    objMens.mensOperation(f'⚠️ Houve o seguinte erro\n *:yellow-background[{error}]*.')                            
-        with st.expander(label='Arquivos tratados por este aplicativo.', 
-                                 icon=':material/keep:'):
-            self.formatExpander()
-            optData = pd.DataFrame(self.expandFiles, 
-                                   index = self.index)
-            st.table(optData)       
+                                        objMens.mensOperation(f'⚠️ Houve o seguinte erro\n *:yellow-background[{error}]*.')                            
+            with st.expander(label='Arquivos tratados por este aplicativo.', 
+                             expanded=False,
+                             icon=':material/keep:'):
+                self.formatExpander()
+                optData = pd.DataFrame(self.expandFiles, index = self.index)
+                st.table(optData)       
             
     def formatExpander(self):
         filesExt = {'CSV': 'https://pt.wikipedia.org/wiki/Comma-separated_values', 
@@ -1221,7 +1230,7 @@ class main():
         self.expandFiles = {'Tipo de arquivo': allExts, 
                             'URL': list(filesExt.values())}
         self.index = [w + 1 for w in range(len(allExts))]
-    
+        
     def preInvoke(self):
         if st.session_state[replDown[0]]:
             self.cutFilesRep()
@@ -1299,9 +1308,9 @@ class main():
     
     def configImageEmpty(self, border):
         with st.container(border=border, key='contZero', gap='small'):
-            st.markdown(f'0️⃣  seleção de tipo e/ou arquivo', text_alignment='center') 
-            st.image(r'zero.jpg') 
-    
+            st.markdown(f'⊘ Sem seleção de tipo e/ou arquivo', text_alignment='center') 
+            st.image('zero.jpg') 
+        
     def setSessionState(self, state):
         for disabled in self.disableds:
             if disabled not in st.session_state:
@@ -1322,7 +1331,13 @@ class main():
                 if filesFind[nameGlobal] > 1:
                     continue
                 dataBytes = upLoad.getvalue()
-                dataString = dataBytes.decode('utf-8-sig')
+                try:
+                    dataString = dataBytes.decode('utf-8-sig')
+                except:
+                    try:
+                        dataString = dataBytes.decode('latin-1')
+                    except:
+                        dataString = dataBytes.decode('ISO-8859-1')
                 self.fileMemory = io.StringIO(dataString)
                 sep = self.detectSep()
                 readerCsv = csv.reader(self.fileMemory, delimiter=sep)
@@ -1350,7 +1365,13 @@ class main():
                     nameFile, ext = os.path.splitext(nameGlobal)
                     nameSize = f'{nameFile}_{upLoad.size}'
                     dataBytes = upLoad.getvalue()
-                    dataString = dataBytes.decode('utf-8-sig')
+                    try:
+                        dataString = dataBytes.decode('utf-8-sig')
+                    except:
+                        try:
+                            dataString = dataBytes.decode('latin-1')
+                        except:
+                            dataString = dataBytes.decode('ISO-8859-1')
                     self.fileMemory = io.StringIO(dataString)
                     sep = self.detectSep()
                     readerCsv = csv.reader(self.fileMemory, delimiter=sep)
@@ -1388,5 +1409,3 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
-
-

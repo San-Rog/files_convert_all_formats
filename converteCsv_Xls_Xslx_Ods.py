@@ -1309,8 +1309,7 @@ class main():
     def configImageEmpty(self, border):
         with st.container(border=border, key='contZero', gap='small'):
             st.markdown(f'⊘ Sem seleção de tipo e/ou arquivo', text_alignment='center') 
-            st.image('zero.jpg') 
-        
+            
     def setSessionState(self, state):
         for disabled in self.disableds:
             if disabled not in st.session_state:
@@ -1409,3 +1408,4 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+

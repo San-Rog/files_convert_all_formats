@@ -292,7 +292,6 @@ class downOrDfFiles():
             self.file = file
             self.prepaireCsv()
             self.df = pd.read_csv(self.fileOut).fillna('')
-            self.renameHead()
             self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}.{self.ext}'
             htmlTable = self.df.to_html()
             with open(self.fileOut, 'w', encoding='utf-8-sig') as f:
@@ -311,7 +310,6 @@ class downOrDfFiles():
                 self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}_{name}.{self.ext}'
                 self.df = df.fillna('')
                 self.df = self.df.astype(str)
-                self.renameHead()
                 try:
                     htmlStr = df.to_html(index=False, border=1, classes='dataframe')
                 except:
@@ -335,10 +333,6 @@ class downOrDfFiles():
                 self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}_{name}.{self.ext}'
                 self.df = df.fillna('')
                 self.df = self.df.astype(str)
-                try:
-                    self.renameHead()
-                except: 
-                    pass
                 if self.index == 0:
                     htmlStr = self.df.to_html()
                     with open(self.fileOut, 'w', encoding='utf-8-sig') as f:
@@ -379,7 +373,6 @@ class downOrDfFiles():
                 doc = Document()
                 self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}_{name}.{self.ext}'
                 self.df = df.fillna('')
-                #self.renameHead()
                 doc.add_heading(f'Tabela da Aba: {name}', level=1)
                 table = doc.add_table(rows=1, cols=len(self.df.columns))
                 table.style = 'Table Grid' 
@@ -488,7 +481,6 @@ class downOrDfFiles():
                 for name, df in self.dfAll.items():
                     self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}_{name}.{self.ext}'
                     self.df = dfAllDict[cnt].fillna('')
-                    self.renameHead()
                     if self.index == 2:
                         self.df.to_csv(self.fileOut, sep='\t', index=False,  encoding='utf-8-sig')
                     elif self.index == 5: 
@@ -505,7 +497,6 @@ class downOrDfFiles():
                 for name, df in self.dfAll.items():
                     self.fileOut = f'{str(f+1).zfill(5)}_{self.nameFile}_{name}.{self.ext}'
                     self.df = df.fillna('')
-                    self.renameHead()
                     if self.index == 2:
                         self.df.to_csv(self.fileOut, sep='\t', index=False,  encoding='utf-8-sig')
                     elif self.index == 5: 
@@ -633,7 +624,6 @@ class downOrDfFiles():
             self.file = file
             self.prepaireCsv()
             self.df = pd.read_csv(self.fileOut, encoding='utf-8-sig').fillna('')
-            self.renameHead()
             output = BytesIO()
             self.df.to_csv(output, sep='\t', index=False)
             csvBytes = output.getvalue()
@@ -651,7 +641,6 @@ class downOrDfFiles():
         self.fileOut = self.csvCsv(1)
         self.df = pd.read_csv(self.fileOut, encoding='utf-8-sig').fillna('')
         self.df = self.df.astype(str)
-        self.renameHead()
         self.exprFile = exprFile
         self.expr = ''
         self.exprLine, self.exprCol, self.exprCells = [w for w in range(3)]
@@ -702,7 +691,6 @@ class downOrDfFiles():
         for name, df in self.dfAll.items():
             self.df = pd.read_excel(self.dataFile, sheet_name=name, engine=keyEngine)
             self.df = self.df.fillna('')
-            self.renameHead()
             allDfs[pos].append(self.df)
             self.expr = ''
             self.exprLine, self.exprCol, self.exprCells = [w for w in range(3)]
@@ -780,7 +768,7 @@ class downOrDfFiles():
                     for key, value in row.items():
                         if value is None or value == '':
                             processedRow[key] = None 
-                        elif value.lower() in [True, False]:
+                        elif value in [True, False]:
                             processedRow[key] = value.lower() == 'true'
                         else:
                             try:
@@ -964,18 +952,6 @@ class downOrDfFiles():
         self.filesZip.append(zips) 
         self.nFiles += 1
     
-    def renameHead(self):
-        head = {}
-        for col in self.df.columns:
-            try:
-                if col.lower().find('unnamed') >= 0:
-                    head[col] = ''
-                else:
-                    head[col] = col
-            except:
-                pass
-        self.df.rename(columns=head, inplace=True)
-        
     def downZip(self):
         with zipfile.ZipFile(self.nameZip, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for file in self.filesZip:
@@ -1312,8 +1288,8 @@ class main():
     def configImageEmpty(self, border):
         with st.container(border=border, key='contZero', gap='small'):
             st.markdown(f'⊘ Sem seleção de tipo e/ou arquivo', text_alignment='center') 
-            st.image('zero.jpg')
-            
+            st.image('zero.jpg') 
+        
     def setSessionState(self, state):
         for disabled in self.disableds:
             if disabled not in st.session_state:
@@ -1412,8 +1388,3 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
-
-
-
-
-

@@ -969,7 +969,7 @@ class downOrDfFiles():
         for col in self.df.columns:
             try:
                 if col.lower().find('unnamed') >= 0:
-                    head[col] = 'coluna'
+                    head[col] = ''
                 else:
                     head[col] = col
             except:

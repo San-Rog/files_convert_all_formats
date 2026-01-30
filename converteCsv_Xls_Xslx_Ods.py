@@ -967,10 +967,13 @@ class downOrDfFiles():
     def renameHead(self):
         head = {}
         for col in self.df.columns:
-            if col.lower().find('unnamed') >= 0:
-                head[col] = ''
-            else:
-                head[col] = col
+            try:
+                if col.lower().find('unnamed') >= 0:
+                    head[col] = 'coluna'
+                else:
+                    head[col] = col
+            except:
+                pass
         self.df.rename(columns=head, inplace=True)
         
     def downZip(self):
@@ -1409,6 +1412,7 @@ if __name__ == '__main__':
     external = configExternal(None)
     external.configCss()
     main()
+
 
 
 
